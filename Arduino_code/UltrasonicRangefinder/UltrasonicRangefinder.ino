@@ -33,13 +33,16 @@ void setup() {
   pinMode(pingRxPin, INPUT);
   pinMode(button, INPUT);
   digitalWrite(button, HIGH);
+
+  // begin serial for debugging purposes
+  Serial.begin(9600);
   
 }
 
 void loop() {
   
   // while the button is held, measure distance
-  while (digitalRead(button) == HIGH) { 
+  while (digitalRead(button) == LOW) { 
 
     // establish variables for duration of the ping,
     // and the distance result in inches and centimeters:
@@ -48,16 +51,16 @@ void loop() {
     // The PING))) is triggered by a HIGH pulse of 2 or more microseconds.
     // Give a short LOW pulse beforehand to ensure a clean HIGH pulse:
     
-    digitalWrite(pingPin, LOW);
+    digitalWrite(pingTXPin, LOW);
     delayMicroseconds(2);
-    digitalWrite(pingPin, HIGH);
+    digitalWrite(pingTXPin, HIGH);
     delayMicroseconds(5);
-    digitalWrite(pingPin, LOW);
+    digitalWrite(pingTXPin, LOW);
   
     // A HIGH pulse whose duration is the time (in microseconds) from 
     // the sending of the ping to the reception of its echo off of an object.
   
-    duration = pulseIn(pingPin, HIGH);
+    duration = pulseIn(pingRXPin, HIGH);
   
     // convert the time into a distance
     inches = microsecondsToInches(duration);
@@ -69,10 +72,15 @@ void loop() {
     lcd.print("   ");
     lcd.setCursor(0, 0);
     lcd.print(inches);
+
     lcd.setCursor(0, 1);
     lcd.print("   ");
     lcd.setCursor(0, 1);
     lcd.print(cm);
+
+    // print distance to serial, for debugging
+    Serial.print("in: ");
+    Serial.println(inches);
   
     delay(100);
   }
